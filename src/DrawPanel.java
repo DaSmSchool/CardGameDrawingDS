@@ -11,16 +11,20 @@ class DrawPanel extends JPanel implements MouseListener {
 
     private ArrayList<Card> hand;
     private Rectangle button;
+    private Rectangle replaceCard;
+    private Rectangle count;
 
     public DrawPanel() {
-        button = new Rectangle(147+15, 250, 160, 26);
+        button = new Rectangle(147+15, 250, 150, 26);
+        replaceCard = new Rectangle(147+15, 300, 150, 26);
+        count = new Rectangle(147+15, 350, 100, 26);
         this.addMouseListener(this);
         hand = Card.buildHand();
     }
 
-    public void drawButton(Graphics g) {
-        g.setFont(new Font("Courier New", Font.BOLD, 20));
-        g.drawString("GET NEW CARDS", 150+15, 270);
+    public void drawButton(Graphics g, Rectangle button, String text, int size) {
+        g.setFont(new Font("Courier New", Font.BOLD, size));
+        g.drawString(text, button.x + 3, button.y+20);
         g.drawRect((int)button.getX(), (int)button.getY(), (int)button.getWidth(), (int)button.getHeight());
     }
 
@@ -47,7 +51,9 @@ class DrawPanel extends JPanel implements MouseListener {
             g.drawImage(c.getImage(), x, y, null);
             x = x + c.getImage().getWidth() + 10;
         }
-        drawButton(g);
+        drawButton(g, button, "RESTART GAME", 20);
+        drawButton(g, replaceCard, "REPLACE SELECTED", 20);
+        drawButton(g, count, "CARDS LEFT: " + Card.getDeck().size(), 20);
     }
 
     public void mousePressed(MouseEvent e) {
@@ -59,28 +65,57 @@ class DrawPanel extends JPanel implements MouseListener {
                 hand = Card.buildHand();
             }
 
-            for (int i = 0; i < hand.size(); i++) {
-                Rectangle box = hand.get(i).getCardBox();
-                if (box.contains(clicked)) {
-                    hand.get(i).flipCard();
+            if (replaceCard.contains(clicked)) {
+                for (int i = 0; i < hand.size(); i++) {
+                    Card currCard = hand.get(i);
+                    if (currCard.getHighlight()) {
+                        hand.set(i, currCard.getAvailableDeckCard());
+                        currCard = hand.get(i);
+                        currCard.readImage();
+                        if (currCard.getHighlight()) {
+                            currCard.flipHighlight();
+                        }
+                    }
                 }
             }
-        }
 
-        if (e.getButton() == 3) {
             for (int i = 0; i < hand.size(); i++) {
                 Card currCard = hand.get(i);
                 Rectangle box = currCard.getCardBox();
                 if (box.contains(clicked)) {
-                    if (currCard.getHighlight()) {
-                        hand.set(i, currCard.getAvailableDeckCard());
-                        currCard.readImage();
-                    } else {
+//                    if (currCard.getHighlight()) {
+//                        hand.set(i, currCard.getAvailableDeckCard());
+//                        currCard.readImage();
+//                    } else {
                         currCard.flipHighlight();
-                    }
+//                    }
                 }
             }
+
+//            flipping logic
+//            for (int i = 0; i < hand.size(); i++) {
+//                Rectangle box = hand.get(i).getCardBox();
+//                if (box.contains(clicked)) {
+//                    hand.get(i).flipCard();
+//                }
+//            }
+
         }
+
+//        if (e.getButton() == 3) {
+//            for (int i = 0; i < hand.size(); i++) {
+//                Card currCard = hand.get(i);
+//                Rectangle box = currCard.getCardBox();
+//                if (box.contains(clicked)) {
+//                    if (currCard.getHighlight()) {
+//                        hand.set(i, currCard.getAvailableDeckCard());
+//                        currCard.readImage();
+//                    } else {
+//                        currCard.flipHighlight();
+//                    }
+//                }
+//            }
+//        }
 
 
     }

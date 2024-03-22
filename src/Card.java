@@ -57,6 +57,10 @@ public class Card {
         this.image = readImage();
     }
 
+    public static ArrayList<Card> getDeck() {
+        return currDeck;
+    }
+
     public void flipHighlight() {
         highlight = !highlight;
     }
@@ -87,13 +91,20 @@ public class Card {
     }
 
     public Card getAvailableDeckCard() {
+        if (currDeck.size() == 0) {
+            return null;
+        }
+
         ArrayList<Card> availableDeck = new ArrayList<Card>();
 
-        for (Card card : currDeck) {
-            if (card != this) {
-                availableDeck.add(card);
+        for (int cardInd = 0; cardInd < currDeck.size(); cardInd++) {
+            if (currDeck.get(cardInd) != this) {
+                availableDeck.add(currDeck.remove(cardInd));
+                cardInd--;
             }
         }
+
+        currDeck = availableDeck;
 
         int r = (int)(Math.random()*availableDeck.size());
 
